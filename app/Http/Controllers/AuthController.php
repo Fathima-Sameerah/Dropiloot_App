@@ -63,8 +63,8 @@ class AuthController extends Controller
             ['phone' => $request->phone],
             [
                 'name' => 'New User',
-                'email' => $request->phone . '@dropiloot.com', // Generate email from phone
-                'password' => bcrypt(Str::random(16)) // Generate random password
+                'email' => $request->phone . '@gmail.com', // Generate email from phone
+                'password' => bcrypt(Str::random(6)) // Generate random password
             ]
         );
 
@@ -88,9 +88,52 @@ class AuthController extends Controller
     ]);
 }
 
+public function viewProfile(Request $request)
+{
+    $user = $request->user();
 
+    return response()->json([
+        'user' => $user
+    ]);
+}
 
+public function updateProfile(Request $request)
+{
+    // ✅ Validate input fields
+    $data = $request->validate([
+        'name' => 'nullable|string|max:255',
+        'email' => 'nullable|email|max:255|unique:users,email,' . $request->user()->id,
+        'profile_image' => 'nullable|url|max:1000',
+    ]);
 
+    // ✅ Update the current user
+    $user = $request->user();
+    $user->fill($data);
+    $user->save();
+
+    // ✅ Send back a clear success message
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'user' => $user
+    ]);
+}
+
+public function upgradeToSeller(Request $request)
+{
+    $data = $request->validate([
+        'business_name' => 'required|string|max:255'
+    ]);
+
+    $user = $request->user();
+    $user->business_name = $data['business_name'];
+    $user->is_seller = true;
+    $user->save();
+
+    return response()->json([
+        'message' => 'Upgraded to seller successfully',
+        'user' => $user
+    ]);
+}
 }
 
 
