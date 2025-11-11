@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DropController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ReviewController;
 
 
 
@@ -37,4 +38,17 @@ Route::get('/categories', [CategoryController::class, 'index']);
 // Protected (auth required)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/drops/{id}/category', [CategoryController::class, 'assignToDrop']);
+});
+
+// Test route to verify routing works
+Route::get('/test-reviews', function() {
+    return response()->json(['message' => 'Reviews route test - working!']);
+});
+
+// Public route - Get reviews for a seller
+Route::get('/sellers/{id}/reviews', [ReviewController::class, 'showSellerReviews']);
+
+// Protected route (must be logged in to write review) - Create a review
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/sellers/{id}/reviews', [ReviewController::class, 'store']);
 });
