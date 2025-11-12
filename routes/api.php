@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DropController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ChatController;
 
 
 
@@ -51,4 +52,13 @@ Route::get('/sellers/{id}/reviews', [ReviewController::class, 'showSellerReviews
 // Protected route (must be logged in to write review) - Create a review
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/sellers/{id}/reviews', [ReviewController::class, 'store']);
+});
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/chats/start', [ChatController::class, 'startChat']);
+    Route::get('/chats', [ChatController::class, 'getChats']);
+    Route::post('/chats/{chat_id}/messages', [ChatController::class, 'sendMessage']);
+    Route::get('/chats/{chat_id}/messages', [ChatController::class, 'getMessages']);
 });
